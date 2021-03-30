@@ -1,4 +1,4 @@
-module gonsque
+module github.com/vashc/gonsque
 
 go 1.15
 
