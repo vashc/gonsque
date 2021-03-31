@@ -34,6 +34,6 @@ func (h Handler) Unmarshal(model interface{}, next Handler) Handler {
 }
 
 // Middleware - обёртка для создания цепочек промежуточной обработки
-func (h Handler) Middleware(fn Middleware) Handler {
-	return fn(h)
+func (h Handler) Middleware(fn Middleware, args ...interface{}) Handler {
+	return fn(h, args...)
 }

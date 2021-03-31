@@ -146,7 +146,7 @@ func (q *Queue) DeferredPublish(topic string, obj interface{}, delay time.Durati
 func (q *Queue) BulkPublish(topic string, objs []interface{}) error {
 	q.assertInitialized()
 
-	bodies :=  make([][]byte, len(objs))
+	bodies := make([][]byte, len(objs))
 	for i := range objs {
 		body, err := json.Marshal(objs[i])
 		if err != nil {

@@ -27,7 +27,7 @@ func HandleMessage(msg interface{}) error {
 
 func TestQueue(t *testing.T) {
 	q := &Queue{
-		NsqD: "localhost:4150",
+		NsqD:       "localhost:4150",
 		NsqLookupD: "localhost:4161",
 	}
 
@@ -36,8 +36,8 @@ func TestQueue(t *testing.T) {
 	}
 
 	var handler Handler = HandleMessage
-	handler = handler.Unmarshal(&model{}, HandleMessage).
-		Middleware(WithFoo).
+	handler = handler.
+		Middleware(WithModel, &model{}).
 		Middleware(WithTimer)
 
 	if err := q.Subscribe("topic", "channel", 2, handler); err != nil {
@@ -53,7 +53,7 @@ func TestQueue(t *testing.T) {
 	mux.HandleFunc("/pub", q.ProxyPublish("topic"))
 
 	s := http.Server{
-		Addr: ":8080",
+		Addr:    ":8080",
 		Handler: mux,
 	}
 

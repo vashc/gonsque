@@ -33,14 +33,14 @@ func (q *Queue) ProxyMetrics(topic string) http.Handler {
 	gaugeMsgs := prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Namespace: "golang_nsq",
-			Name: fmt.Sprintf("nsq_%s_gauge_msg", topic),
+			Name:      fmt.Sprintf("nsq_%s_gauge_msg", topic),
 		},
 	)
 
 	counterMsgs = prometheus.NewCounter(
 		prometheus.CounterOpts{
 			Namespace: "golang_nsq",
-			Name: fmt.Sprintf("nsq_%s_counter_msg", topic),
+			Name:      fmt.Sprintf("nsq_%s_counter_msg", topic),
 		},
 	)
 
