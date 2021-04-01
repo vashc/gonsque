@@ -2,6 +2,7 @@ package gonsque
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/nsqio/go-nsq"
 	"github.com/pkg/errors"
 	"sync"
@@ -162,17 +163,20 @@ func (q *Queue) BulkPublish(topic string, objs []interface{}) error {
 	)
 }
 
-// Start запускает работу очереди, автоматически останавливаясь, если контекст умер
-//func (q *Queue) Start(ctx context.Context) {
-//	for {
-//		select {
-//		case <-ctx.Done():
-//			q.Stop()
-//			return
-//		default:
-//		}
-//	}
-//}
+// Start запускает работу очереди с указанными потребителями
+func (q *Queue) Start(subs ...*Subscriber) error {
+	if err := q.Init(); err != nil {
+		return errors.Wrap(err, "initializing queue")
+	}
+
+	for i := range subs {
+		if err := q.Subscribe(subs[i].topic, subs[i].channel, subs[i].concurrency, subs[i].handler); err != nil {
+			return errors.Wrap(err, fmt.Sprintf("subscribing to %s/%s", subs[i].topic, subs[i].channel))
+		}
+	}
+
+	return errors.Wrap(q.Connect(), "connecting consumers")
+}
 
 // Stop останавливает работу очереди: отправляет сигнал потребителям/поставщику и ждёт их завершения
 func (q *Queue) Stop() {
@@ -195,6 +199,12 @@ func (q *Queue) Stop() {
 
 	// После закрытия нельзя пользоваться публикацией, потребители/поставщик завершили работу
 	q.initialized = false
+}
+
+// Unregister удаляет указанный топик/канал в текущем подключенном nsqd.
+// Может быть полезным на teardown этапе при тестировании
+func (q *Queue) Unregister(topic, channel string) {
+	nsq.UnRegister(topic, channel)
 }
 
 func (q *Queue) assertInitialized() {

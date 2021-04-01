@@ -8,7 +8,7 @@ import (
 
 type Handler func(msg interface{}) error
 
-// HandleFunc() возвращает обработчик NSQ
+// HandleFunc возвращает обработчик NSQ
 func (h Handler) HandleFunc() nsq.HandlerFunc {
 	return func(msg *nsq.Message) error {
 		return h(msg.Body)
