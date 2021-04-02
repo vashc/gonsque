@@ -15,7 +15,7 @@ func WithTimer(h Handler, args ...interface{}) Handler {
 		log.Printf("start: %s", startTime)
 		err = h(msg)
 		log.Printf("finish: %s", time.Now())
-		log.Printf("elapsed time: %d", time.Since(startTime).Milliseconds())
+		log.Printf("elapsed time: %d ms", time.Since(startTime).Milliseconds())
 		return
 	}
 }
@@ -38,5 +38,15 @@ func WithModel(h Handler, args ...interface{}) Handler {
 			}
 		}
 		return h(msg)
+	}
+}
+
+func WithNotifier(h Handler, args ...interface{}) Handler {
+	ch := args[0].(chan struct{})
+
+	return func(msg interface{}) (err error) {
+		err = h(msg)
+		ch <- struct{}{}
+		return
 	}
 }
