@@ -8,6 +8,7 @@ services:
     ports:
       - 4160
       - 4161:4161
+    restart: on-failure
   nsqd:
     container_name: nsqd
     image: nsqio/nsq
@@ -18,6 +19,7 @@ services:
     ports:
       - 4150:4150
       - 4151:4151
+    restart: on-failure
   nsqadmin:
     container_name: nsqadmin
     image: nsqio/nsq
@@ -26,11 +28,4 @@ services:
       - nsqlookupd
     ports:
       - 4171:4171
-  prometheus:
-    container_name: prometheus
-    network_mode: host
-    image: quay.io/prometheus/prometheus:latest
-    ports:
-      - 9090:9090
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: on-failure
