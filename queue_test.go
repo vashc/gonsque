@@ -14,10 +14,9 @@ type model struct {
 	Title string `json:"title"`
 }
 
-func HandleMessage(msg interface{}) error {
+func HandleMessage(msg *Message) error {
 	log.Print("handling message")
-	m := msg.(*model)
-	log.Printf("model: %+v", m)
+	log.Printf("model: %+v", msg.Body)
 
 	time.Sleep(2 * time.Second)
 
@@ -36,10 +35,9 @@ func TestQueue(t *testing.T) {
 
 	var handler Handler = HandleMessage
 	handler = handler.
-		Middleware(WithModel, &model{}).
 		Middleware(WithTimer)
 
-	if err := q.Subscribe("topic", "channel", 2, handler); err != nil {
+	if err := q.Subscribe(NewSubscriber("topic", "channel", 2, handler, model{})); err != nil {
 		log.Fatal(err)
 	}
 
@@ -74,15 +72,9 @@ func TestStart(t *testing.T) {
 
 	var handler Handler = HandleMessage
 	handler = handler.
-		Middleware(WithModel, &model{}).
 		Middleware(WithTimer)
 
-	if err := q.Start(&Subscriber{
-		topic:       "topic",
-		channel:     "channel",
-		concurrency: 2,
-		handler:     handler,
-	}); err != nil {
+	if err := q.Start(NewSubscriber("topic", "channel", 2, handler, model{})); err != nil {
 		log.Fatal(err)
 	}
 

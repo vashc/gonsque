@@ -5,13 +5,15 @@ type Subscriber struct {
 	channel     string
 	concurrency int
 	handler     Handler
+	model       interface{}
 }
 
-func NewSubscriber(topic, channel string, concurrency int, handler Handler) *Subscriber {
+func NewSubscriber(topic, channel string, concurrency int, handler Handler, model interface{}) *Subscriber {
 	return &Subscriber{
 		topic,
 		channel,
 		concurrency,
 		handler,
+		model,
 	}
 }

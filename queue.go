@@ -110,8 +110,8 @@ func (q *Queue) Connect() (err error) {
 }
 
 // Subscribe добавляет к очереди обработчик с указанной степенью конкурентности
-func (q *Queue) Subscribe(topic, channel string, concurrency int, handler Handler) (err error) {
-	_, err = q.AddConsumerWithConcurrency(topic, channel, concurrency, handler.HandleFunc())
+func (q *Queue) Subscribe(sub *Subscriber) (err error) {
+	_, err = q.AddConsumerWithConcurrency(sub.topic, sub.channel, sub.concurrency, sub.handler.HandleFunc(sub.model))
 	return
 }
 
@@ -170,7 +170,7 @@ func (q *Queue) Start(subs ...*Subscriber) error {
 	}
 
 	for i := range subs {
-		if err := q.Subscribe(subs[i].topic, subs[i].channel, subs[i].concurrency, subs[i].handler); err != nil {
+		if err := q.Subscribe(subs[i]); err != nil {
 			return errors.Wrap(err, fmt.Sprintf("subscribing to %s/%s", subs[i].topic, subs[i].channel))
 		}
 	}
